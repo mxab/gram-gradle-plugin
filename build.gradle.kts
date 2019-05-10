@@ -22,7 +22,6 @@ sourceSets {
         runtimeClasspath += output + compileClasspath
     }
     create("manualRun") {
-
         compileClasspath += sourceSets["main"].output + configurations["testRuntimeClasspath"]
         runtimeClasspath += output + compileClasspath + runtimeClasspath
     }
@@ -63,14 +62,11 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.+")
     implementation("org.webjars.npm:livereload-js:3.0.0")
 
-
     testImplementation("org.junit.jupiter:junit-jupiter:5.4.2")
     testImplementation("org.assertj:assertj-core:3.12.2")
     testImplementation("org.mockito:mockito-core:2.+")
 
     "functionalTestImplementation"("org.jsoup:jsoup:1.11.3")
-
-
 }
 repositories {
     jcenter()
@@ -101,8 +97,6 @@ pluginBundle {
             displayName = "gram - static site generator"
             tags = listOf("static site generator", "thymeleaf", "asciidoc", "asciidoctor")
         }
-
     }
-
-
 }
+

@@ -9,7 +9,9 @@ import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
-import org.mockito.Mockito.*
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.never
+import org.mockito.Mockito.verify
 
 internal class LivereloadWebSocketHandlerTest {
     val objectMapper = ObjectMapper()
@@ -60,7 +62,7 @@ internal class LivereloadWebSocketHandlerTest {
     fun notifiy() {
         handler.reloadPath(("foo.txt"))
 
-        var captor = ArgumentCaptor.forClass(String::class.java)
+        val captor = ArgumentCaptor.forClass(String::class.java)
         verify(remoteEndpoint).sendString(captor.capture())
 
         val toJsonTree = objectMapper.readTree(captor.value)
