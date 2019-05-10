@@ -83,7 +83,7 @@ compileTestKotlin.kotlinOptions {
 pluginBundle {
     // These settings are set for the whole plugin bundle
     website = "https://mxab.github.io/gram"
-    vcsUrl = "https://github.com/mxab/gram"
+    vcsUrl = "https://github.com/mxab/gram-gradle-plugin"
 
     // tags and description can be set for the whole bundle here, but can also
     // be set / overridden in the config for specific plugins
