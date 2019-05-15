@@ -8,8 +8,9 @@ import org.eclipse.jetty.server.handler.HandlerList
 import org.eclipse.jetty.websocket.server.WebSocketHandler
 import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory
 import java.nio.file.Path
+import org.eclipse.jetty.server.handler.ContextHandlerCollection
 
-class PreviewServer(private val siteDir: Path) : Server(7181) {
+class PreviewServer(siteDir: Path, contextPath: String = "/") : Server() {
 
     public val port = 7181
 
@@ -17,6 +18,7 @@ class PreviewServer(private val siteDir: Path) : Server(7181) {
         val http = ServerConnector(this)
         http.host = "localhost"
         http.port = port
+
         http.idleTimeout = 30000
 
         // Set the connector
@@ -33,17 +35,22 @@ class PreviewServer(private val siteDir: Path) : Server(7181) {
                 factory.register(LivereloadWebSocketHandler::class.java)
             }
         }
-        val context = ContextHandler()
-
-        context.contextPath = "/"
-        context.handler = wsHandler
-
+        val livereloadWSContext = ContextHandler()
+        livereloadWSContext.contextPath = "/"
         val livereloadJSHandler = LivereloadJSHandler()
+        livereloadWSContext.handler = HandlerList(wsHandler, livereloadJSHandler)
+
+        val contextWithPath = ContextHandler()
+        contextWithPath.contextPath = contextPath
 
         val siteDirHandler = SiteDirHandler(siteDir)
-
         val handlers = HandlerList()
-        handlers.handlers = arrayOf(livereloadJSHandler, context, siteDirHandler, DefaultHandler())
-        this.handler = handlers
+        handlers.handlers = arrayOf(siteDirHandler, DefaultHandler())
+        contextWithPath.handler = handlers
+
+        val contexts = ContextHandlerCollection()
+        contexts.handlers = arrayOf(contextWithPath, livereloadWSContext)
+
+        this.handler = contexts
     }
 }

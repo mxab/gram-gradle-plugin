@@ -1,3 +1,5 @@
 package gram
 
-open class GramExtension
+open class GramExtension {
+    var contextPath = "/"
+}

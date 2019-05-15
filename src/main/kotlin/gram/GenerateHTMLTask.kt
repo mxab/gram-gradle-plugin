@@ -1,6 +1,7 @@
 package gram
 
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
@@ -17,6 +18,9 @@ open class GenerateHTMLTask : DefaultTask() {
 
     @InputDirectory
     lateinit var contentHtmlDir: Path
+
+    @Input
+    lateinit var contextPath: String
 
     @OutputDirectory
     lateinit var outputDir: Path
@@ -40,12 +44,16 @@ open class GenerateHTMLTask : DefaultTask() {
 
         val templateEngine = TemplateEngine()
         templateEngine.setTemplateResolver(templateResolver)
+        templateEngine.setLinkBuilder(GramLinkBuilder(contextPath))
 
         project.fileTree(contentHtmlDir)
                 .visit({
-                    val context = Context()
                     val relativize = templatesDir.relativize(file.toPath())
+
+                    val context = Context()
+
                     context.setVariable("content", relativize.toString().removeSuffix(".html"))
+
                     val process = templateEngine.process("default", context)
 
                     var output = relativePath

@@ -28,6 +28,7 @@ class GramPlugin : Plugin<Project> {
             outputDir = project.buildDir.toPath().resolve("pages")
             dependsOn(processContentTask)
             contentHtmlDir = processContentTask.get().outputDir
+            contextPath = extension.contextPath
         }
 
         val processStatic = project.tasks.register("processStatic", Copy::class.java) {
@@ -44,6 +45,7 @@ class GramPlugin : Plugin<Project> {
 
         project.tasks.register("preview", PreviewTask::class.java) {
             siteDir = siteTask.get().destinationDir
+            contextPath = extension.contextPath
         }
     }
 }

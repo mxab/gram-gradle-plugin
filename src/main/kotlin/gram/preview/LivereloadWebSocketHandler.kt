@@ -19,7 +19,7 @@ class LivereloadWebSocketHandler : WebSocketAdapter() {
         super.onWebSocketConnect(sess)
 
         handlers = handlers.plus(this)
-        println("Socket Connected: $sess")
+        println("Livereload session started")
     }
 
     override fun onWebSocketText(text: String?) {

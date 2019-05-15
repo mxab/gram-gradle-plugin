@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 class SiteDirHandler(private val siteDir: Path) : AbstractHandler() {
-    val liveReloadScriptTag = """<script src="/livereload.js"></script>"""
+
     override fun handle(target: String?, baseRequest: Request?, request: HttpServletRequest?, response: HttpServletResponse?) {
 
         if (target != null && response != null && baseRequest != null) {
@@ -24,6 +24,7 @@ class SiteDirHandler(private val siteDir: Path) : AbstractHandler() {
 
                 if (path.fileName.toString().endsWith(".html")) {
                     var html = toFile.readText()
+                    val liveReloadScriptTag = """<script src="/livereload.js"></script>"""
                     html = if (html.contains("</body>", true)) {
                         html.replace("</body>", """$liveReloadScriptTag</body>""", true)
                     } else {
