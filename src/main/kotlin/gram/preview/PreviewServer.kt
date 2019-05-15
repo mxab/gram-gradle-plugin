@@ -3,17 +3,18 @@ package gram.preview
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.ServerConnector
 import org.eclipse.jetty.server.handler.ContextHandler
+import org.eclipse.jetty.server.handler.ContextHandlerCollection
 import org.eclipse.jetty.server.handler.DefaultHandler
 import org.eclipse.jetty.server.handler.HandlerList
 import org.eclipse.jetty.websocket.server.WebSocketHandler
 import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory
 import java.nio.file.Path
-import org.eclipse.jetty.server.handler.ContextHandlerCollection
 
 class PreviewServer(siteDir: Path, contextPath: String = "/") : Server() {
 
     public val port = 7181
 
+    private val rootContextPath = "/"
     init {
         val http = ServerConnector(this)
         http.host = "localhost"
@@ -35,22 +36,36 @@ class PreviewServer(siteDir: Path, contextPath: String = "/") : Server() {
                 factory.register(LivereloadWebSocketHandler::class.java)
             }
         }
-        val livereloadWSContext = ContextHandler()
-        livereloadWSContext.contextPath = "/"
         val livereloadJSHandler = LivereloadJSHandler()
-        livereloadWSContext.handler = HandlerList(wsHandler, livereloadJSHandler)
+
+        val contextCollection = ContextHandlerCollection()
 
         val contextWithPath = ContextHandler()
         contextWithPath.contextPath = contextPath
 
         val siteDirHandler = SiteDirHandler(siteDir)
-        val handlers = HandlerList()
-        handlers.handlers = arrayOf(siteDirHandler, DefaultHandler())
-        contextWithPath.handler = handlers
 
-        val contexts = ContextHandlerCollection()
-        contexts.handlers = arrayOf(contextWithPath, livereloadWSContext)
+        val handlersForContextWithPath = HandlerList()
+        contextWithPath.handler = handlersForContextWithPath
 
-        this.handler = contexts
+        if (rootContextPath == contextPath) { // use one context
+            handlersForContextWithPath.handlers = arrayOf(wsHandler, livereloadJSHandler, siteDirHandler, DefaultHandler())
+
+            contextCollection.handlers = arrayOf(contextWithPath)
+        } else {
+
+            handlersForContextWithPath.handlers = arrayOf(siteDirHandler, DefaultHandler())
+            val livereloadWSContext = createLivereloadContext(wsHandler, livereloadJSHandler)
+            contextCollection.handlers = arrayOf(contextWithPath, livereloadWSContext)
+        }
+
+        this.handler = contextCollection
+    }
+
+    private fun createLivereloadContext(wsHandler: WebSocketHandler, livereloadJSHandler: LivereloadJSHandler): ContextHandler {
+        val livereloadWSContext = ContextHandler()
+        livereloadWSContext.contextPath = "/"
+        livereloadWSContext.handler = HandlerList(wsHandler, livereloadJSHandler)
+        return livereloadWSContext
     }
 }

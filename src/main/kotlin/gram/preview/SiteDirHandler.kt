@@ -3,7 +3,9 @@ package gram.preview
 import org.eclipse.jetty.server.Request
 import org.eclipse.jetty.server.handler.AbstractHandler
 import java.nio.file.Files
+import java.nio.file.Files.probeContentType
 import java.nio.file.Path
+import java.util.Optional.ofNullable
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
@@ -22,6 +24,10 @@ class SiteDirHandler(private val siteDir: Path) : AbstractHandler() {
             val toFile = path.toFile()
             if (toFile.exists()) {
 
+                val probeContentType = ofNullable(probeContentType(path))
+                probeContentType.ifPresent({
+                    response.addHeader("Content-Type", it)
+                })
                 if (path.fileName.toString().endsWith(".html")) {
                     var html = toFile.readText()
                     val liveReloadScriptTag = """<script src="/livereload.js"></script>"""
