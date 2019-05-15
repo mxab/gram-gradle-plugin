@@ -1,6 +1,5 @@
 package gram
 
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
@@ -17,21 +16,18 @@ internal class ProcessContentTest {
     lateinit var settingsFile: File
     lateinit var buildFile: File
 
+    lateinit var contentDir: File
     @BeforeEach
     fun setup() {
 
         settingsFile = File(temp, "settings.gradle")
         buildFile = File(temp, "build.gradle")
 
-        val contentDir = File(temp, "src/content")
+        contentDir = File(temp, "src/content")
         contentDir.mkdirs()
 
         File(temp, "src/templates").mkdirs()
-        File(contentDir, "index.adoc").writeText("""
-            = Hello World
 
-            == Foo
-        """.trimIndent())
         settingsFile.writeText("""
             rootProject.name = "test-process-html"
         """.trimIndent())
@@ -45,20 +41,51 @@ internal class ProcessContentTest {
 
     @Test
     fun test() {
-        val build = GradleRunner.create()
-                .withProjectDir(temp)
-                .withArguments("processContent")
-                .withPluginClasspath()
-                .build()
 
-        val task = build.task(":processContent")
-        Assertions.assertThat(task)
-                .isNotNull
-                .hasFieldOrPropertyWithValue("outcome", TaskOutcome.SUCCESS)
+        File(contentDir, "index.adoc").writeText("""
+            = Hello World
+
+            == Foo
+        """.trimIndent())
+
+        runProcessContent()
 
         val doc = Jsoup.parse(File(temp, "build/content/index.html").readText())
 
         assertThat(doc.select("#header h1").text()).isEqualTo("Hello World")
         assertThat(doc.select("#content h2").text()).isEqualTo("Foo")
+    }
+
+    @Test
+    fun test_sub_dir() {
+
+        val subContentDir = File(contentDir, "sub")
+        subContentDir.mkdirs()
+        File(subContentDir, "foo.adoc").writeText("""
+            = Foo
+
+            == Sub
+        """.trimIndent())
+
+        runProcessContent()
+
+        val subDoc = Jsoup.parse(File(temp, "build/content/sub/foo.html").readText())
+
+        assertThat(subDoc.select("#header h1").text()).isEqualTo("Foo")
+        assertThat(subDoc.select("#content h2").text()).isEqualTo("Sub")
+    }
+
+    private fun runProcessContent() {
+        val build = GradleRunner.create()
+                .withProjectDir(temp)
+                .withArguments("processContent")
+                .withPluginClasspath()
+                .withDebug(true)
+                .build()
+
+        val task = build.task(":processContent")
+        assertThat(task)
+                .isNotNull
+                .hasFieldOrPropertyWithValue("outcome", TaskOutcome.SUCCESS)
     }
 }

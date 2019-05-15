@@ -6,6 +6,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
+import java.nio.file.Files
 
 import java.nio.file.Path
 
@@ -25,17 +26,19 @@ open class ProcessContentTask() : DefaultTask() {
                 .toFile(false)
                 .headerFooter(true)
                 .asMap()
+
         project
                 .fileTree(contentDir)
-                .matching({
-                    include("*.adoc")
-                }).visit({
-                    if (!isDirectory) {
+                .visit({
+
+                    if (name.endsWith(".adoc")) {
                         val html = asciidoctor.convertFile(file, options)
                         val pageOutput = outputDir
                                 .resolve(relativePath.pathString)
                                 .resolveSibling(file.name.removeSuffix(".adoc").plus(".html"))
-                        pageOutput.toFile().writeText(html)
+                        Files.createDirectories(pageOutput.parent)
+                        pageOutput.toFile()
+                                .writeText(html)
                     }
                 })
     }
