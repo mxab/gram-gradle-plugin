@@ -48,26 +48,30 @@ open class GenerateHTMLTask : DefaultTask() {
 
         project.fileTree(contentHtmlDir)
                 .visit({
-                    val relativize = templatesDir.relativize(file.toPath())
 
-                    val context = Context()
+                    if (!file.isDirectory) {
 
-                    context.setVariable("content", relativize.toString().removeSuffix(".html"))
+                        val relativize = templatesDir.relativize(file.toPath())
 
-                    val process = templateEngine.process("default", context)
+                        val context = Context()
 
-                    var output = relativePath
-                            .pathString
+                        context.setVariable("content", relativize.toString().removeSuffix(".html"))
 
-                    if (!output.endsWith("index.html")) {
-                        output = output.removeSuffix(".html").plus("/index.html")
+                        val process = templateEngine.process("default", context)
+
+                        var output = relativePath
+                                .pathString
+
+                        if (!output.endsWith("index.html")) {
+                            output = output.removeSuffix(".html").plus("/index.html")
+                        }
+                        val outputFile = outputDir
+                                .resolve(output)
+                                .toFile()
+
+                        outputFile.parentFile.mkdirs()
+                        outputFile.writeText(process)
                     }
-                    val outputFile = outputDir
-                            .resolve(output)
-                            .toFile()
-
-                    outputFile.parentFile.mkdirs()
-                    outputFile.writeText(process)
                 })
     }
 }
