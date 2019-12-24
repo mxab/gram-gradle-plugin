@@ -2,18 +2,18 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
 
-    kotlin("jvm") version "1.3.31"
+    kotlin("jvm") version "1.3.50"
     `java-gradle-plugin`
     `kotlin-dsl`
     `maven-publish`
     id("com.gradle.plugin-publish") version "0.10.1"
-    id("org.jmailen.kotlinter") version "1.25.0"
+    id("org.jmailen.kotlinter") version "2.2.0"
 }
 
 
 tasks {
     named<Wrapper>("wrapper") {
-        gradleVersion = "5.4.1"
+        gradleVersion = "6.0.1"
     }
 }
 sourceSets {
@@ -52,7 +52,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(gradleApi())
     implementation("org.thymeleaf:thymeleaf:3.0.11.RELEASE")
-    implementation("org.asciidoctor:asciidoctorj:2.0.0")
+    implementation("org.asciidoctor:asciidoctorj:2.2.0")
     implementation("org.eclipse.jetty:jetty-server:9.4.18.v20190429")
     implementation("org.eclipse.jetty.websocket:websocket-server:9.4.18.v20190429")
 
@@ -62,11 +62,12 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.+")
     implementation("org.webjars.npm:livereload-js:3.0.0")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.4.2")
-    testImplementation("org.assertj:assertj-core:3.12.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
+    testImplementation("org.assertj:assertj-core:3.14.0")
     testImplementation("org.mockito:mockito-core:2.+")
 
     "functionalTestImplementation"("org.jsoup:jsoup:1.11.3")
+    "functionalTestImplementation"("org.assertj:assertj-core:3.12.2")
 }
 repositories {
     jcenter()

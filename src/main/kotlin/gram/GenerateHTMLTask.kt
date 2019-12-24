@@ -1,5 +1,6 @@
 package gram
 
+import java.nio.file.Path
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
@@ -9,7 +10,6 @@ import org.thymeleaf.TemplateEngine
 import org.thymeleaf.context.Context
 import org.thymeleaf.templatemode.TemplateMode.HTML
 import org.thymeleaf.templateresolver.FileTemplateResolver
-import java.nio.file.Path
 
 open class GenerateHTMLTask : DefaultTask() {
 

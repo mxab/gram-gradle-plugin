@@ -1,15 +1,15 @@
 package gram
 
 import gram.preview.PreviewTask
-import org.assertj.core.api.Assertions.assertThat
-import org.gradle.api.tasks.Copy
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.io.TempDir
 import java.nio.file.Files
 import java.nio.file.Files.createDirectories
 import java.nio.file.Files.createFile
 import java.nio.file.Path
+import org.assertj.core.api.Assertions.assertThat
+import org.gradle.api.tasks.Copy
 import org.gradle.testfixtures.ProjectBuilder.builder as projectBuilder
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.io.TempDir
 
 internal class GramPluginTest {
 
